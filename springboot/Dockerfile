@@ -1,5 +1,5 @@
 # 使用制品中心的openjdk作为基础镜像
-FROM docker pull dragonwell-registry.cn-hangzhou.cr.aliyuncs.com/dragonwell/dragonwell:8
+FROM dragonwell-registry.cn-hangzhou.cr.aliyuncs.com/dragonwell/dragonwell:8
 
 # 设置工作目录
 WORKDIR /app
