@@ -1,0 +1,61 @@
+version: '3'
+services:
+  mysql:
+    image: ${docker_mysql}
+    working_dir: /code
+    deploy:
+       mode: replicated
+       replicas: 1
+       restart_policy:
+        condition: on-failure
+       placement:
+         constraints:
+           - node.Hostname == registry.Docker.com
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "MYSQL_DATABASE=docker_test"
+      - "TZ=Asia/Shanghai"
+    ports:
+        - 3306:3306
+    networks:
+      - my-swarm-network
+
+
+  springboot:
+    image: ${docker_springboot}
+    deploy:
+       mode: replicated
+       replicas: 1
+       restart_policy:
+        condition: on-failure
+       placement:
+         constraints:
+           - node.Hostname == localhost.localdomain
+    networks:
+      - my-swarm-network
+    ports:
+        - 8080:8080
+    depends_on:
+      - mysql
+  vue:
+    image: ${docker_vue}
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+       condition: on-failure
+      placement:
+        constraints:
+          - node.Hostname == localhost.localdomain
+    networks:
+      - my-swarm-network
+    ports:
+        - 80:80
+    depends_on:
+      - springboot
+
+networks:
+  my-swarm-network:
+    driver: overlay
